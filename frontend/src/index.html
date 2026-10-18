@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="Clinical decision support for chronic kidney disease risk screening">
+  <title>Renal Insight — CKD Risk Screening</title><link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+  <section id="authView" class="auth-shell">
+    <div class="brand-panel">
+      <a class="brand" href="#"><span class="brand-mark">R</span><span>Renal Insight</span></a>
+      <div class="brand-copy"><p class="eyebrow">Clinical decision support</p><h1>Earlier signals.<br><em>Better decisions.</em></h1><p>Structured kidney risk screening for clinicians, designed around the data already collected in routine care.</p></div>
+      <div class="trust-note"><span>✦</span><p><strong>Screening support only</strong><br>Results do not replace clinical judgment or diagnosis.</p></div>
+    </div>
+    <main class="auth-card">
+      <div class="mobile-brand"><span class="brand-mark">R</span> Renal Insight</div>
+      <p class="eyebrow">Welcome</p><h2 id="authTitle">Sign in to your workspace</h2><p class="muted" id="authSubtitle">Enter your clinical account details to continue.</p>
+      <form id="authForm" novalidate>
+        <label id="nameField" class="hidden">Full name<input name="fullName" autocomplete="name" placeholder="Dr. Alex Morgan"></label>
+        <label>Email address<input name="email" type="email" autocomplete="email" required placeholder="clinician@hospital.org"></label>
+        <label>Password<input name="password" type="password" autocomplete="current-password" minlength="8" required placeholder="At least 8 characters"></label>
+        <p class="form-error" id="authError"></p><button class="primary wide" type="submit"><span id="authAction">Sign in</span><span>→</span></button>
+      </form>
+      <button class="text-button" id="authToggle">Need an account? <strong>Create one</strong></button>
+    </main>
+  </section>
+
+  <div id="appView" class="app-shell hidden">
+    <aside class="sidebar">
+      <a class="brand dark" href="#"><span class="brand-mark">R</span><span>Renal Insight</span></a>
+      <nav aria-label="Main navigation">
+        <button class="nav-item active" data-view="overview"><span>⌂</span>Overview</button>
+        <button class="nav-item" data-view="screening"><span>＋</span>New screening</button>
+        <button class="nav-item" data-view="batch"><span>⇧</span>Batch upload</button>
+        <button class="nav-item" data-view="history"><span>≡</span>History</button>
+      </nav>
+      <div class="sidebar-bottom"><div class="profile"><span class="avatar" id="avatar">A</span><div><strong id="userName">Clinician</strong><small id="userEmail"></small></div></div><button class="logout" id="logout">Sign out</button></div>
+    </aside>
+    <main class="main-content">
+      <header class="topbar"><button id="menuButton" class="menu-button">☰</button><div><p class="eyebrow">Renal health workspace</p><h2 id="pageTitle">Overview</h2></div><button class="primary" data-go="screening">+ New screening</button></header>
+
+      <section class="page active" id="overviewPage">
+        <div class="hero"><div><p class="eyebrow">Decision support</p><h1>Good morning, <span id="firstName">Clinician</span>.</h1><p>Review your screening activity or begin a new kidney risk assessment.</p><button class="light-button" data-go="screening">Start a screening <span>→</span></button></div><div class="kidney-orbit" aria-hidden="true"><div class="pulse-ring"></div><span>RI</span></div></div>
+        <div class="stat-grid">
+          <article class="stat"><span class="stat-icon blue">◎</span><div><small>Total screenings</small><strong id="statTotal">0</strong><p>All recorded assessments</p></div></article>
+          <article class="stat"><span class="stat-icon coral">!</span><div><small>Elevated risk</small><strong id="statRisk">0</strong><p>Require clinical review</p></div></article>
+          <article class="stat"><span class="stat-icon green">✓</span><div><small>Normal result</small><strong id="statNormal">0</strong><p>Screened as low risk</p></div></article>
+          <article class="stat"><span class="stat-icon gold">⋯</span><div><small>Awaiting model</small><strong id="statFailed">0</strong><p>AI endpoint unavailable</p></div></article>
+        </div>
+        <div class="panel"><div class="panel-head"><div><p class="eyebrow">Recent activity</p><h3>Latest screenings</h3></div><button class="text-button" data-go="history">View all →</button></div><div id="recentTable"></div></div>
+      </section>
+
+      <section class="page" id="screeningPage">
+        <div class="page-intro"><div><p class="eyebrow">Single patient assessment</p><h1>New CKD risk screening</h1><p>Enter current clinical values. Required fields are marked with an asterisk.</p></div><div class="progress-chip"><span>24</span> clinical features</div></div>
+        <form id="predictionForm" class="clinical-form" novalidate>
+          <fieldset><legend><span>01</span><div>Patient & vital signs<small>Basic reference details</small></div></legend><div class="fields three"><label>Patient code<input name="patientCode" maxlength="80" placeholder="Optional reference"></label><label>Age (years) *<input name="age" type="number" min="1" max="120" required></label><label>Diastolic BP (mm/Hg) *<input name="bp" type="number" min="20" max="200" step="0.1" required></label></div></fieldset>
+          <fieldset><legend><span>02</span><div>Clinical history<small>Conditions and observed symptoms</small></div></legend><div class="fields three" id="clinicalFields"></div></fieldset>
+          <fieldset><legend><span>03</span><div>Urinalysis<small>Urine sample measurements</small></div></legend><div class="fields three" id="urineFields"></div></fieldset>
+          <fieldset><legend><span>04</span><div>Blood analysis<small>Laboratory blood measurements</small></div></legend><div class="fields three" id="bloodFields"></div></fieldset>
+          <div class="disclaimer"><span>i</span><p><strong>Medical disclaimer</strong> This AI-assisted result supports screening only. It does not replace a complete assessment, clinical judgment, or specialist diagnosis.</p></div>
+          <div class="form-actions"><button type="reset" class="secondary">Clear form</button><button type="submit" class="primary" id="predictButton">Run risk screening →</button></div>
+        </form>
+        <article id="resultCard" class="result-card hidden"></article>
+      </section>
+
+      <section class="page" id="batchPage"><div class="page-intro"><div><p class="eyebrow">Bulk assessment</p><h1>Batch screening</h1><p>Upload up to 1,000 patients using the standard feature template.</p></div></div><div class="panel upload-panel"><div class="upload-icon">⇧</div><h3>Drop a CSV or XLSX file here</h3><p>Use the exact column names from the downloadable template.</p><input id="batchFile" type="file" accept=".csv,.xlsx" hidden><button class="primary" id="chooseFile">Choose file</button><a href="./sample-patients.csv" download>Download CSV template</a><div id="selectedFile" class="selected-file"></div><button id="uploadBatch" class="secondary hidden">Process batch</button></div></section>
+
+      <section class="page" id="historyPage"><div class="page-intro"><div><p class="eyebrow">Screening records</p><h1>Assessment history</h1><p>Your previous screening requests and model results.</p></div><button class="secondary" id="refreshHistory">Refresh</button></div><div class="panel"><div id="historyTable"></div><div class="pagination"><button id="prevPage">← Previous</button><span id="pageInfo">Page 1</span><button id="nextPage">Next →</button></div></div></section>
+    </main>
+  </div>
+  <script type="module" src="./app.js"></script>
+</body>
+</html>
